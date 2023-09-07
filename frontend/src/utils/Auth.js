@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://api.shakh.eth.nomoredomainsicu.ru/';
+export const BASE_URL = 'http://api.shakh.eth.nomoredomainsicu.ru';
 
 const _getResponseData = res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`);
 

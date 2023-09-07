@@ -1,5 +1,5 @@
 {
-  "homepage": "https://umareth.github.io/react-mesto-auth/",
+  "homepage": "/",
   "name": "mesto-react",
   "version": "0.1.0",
   "private": true,
@@ -7,6 +7,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "http-server": "^14.1.1",
     "react": "^18.2.0",
     "react-content-loader": "^6.2.1",
     "react-dom": "^18.2.0",
