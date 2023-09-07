@@ -1,38 +1,35 @@
 export default class Api {
-  constructor({ baseUrl, headers }) {
-    this._baseUrl = `${baseUrl}`;
-    this._headers = headers;
-    this._token = headers.authorization;
+  constructor({ baseUrl }) {
+    this._baseUrl = baseUrl;
   }
 
-  _getResponseData(res) {
-    if (res.ok) {
-      return res.json();
-    } else {
-      return Promise.reject(`Ошибка: ${res.status}`);
-    }
-  }
-
+  _getResponseData = res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`);
+  
   getCards() {
     return fetch(`${this._baseUrl}/cards`, {
       headers: {
-        authorization: this._token,
-      },
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },//заголовки запроса
     }).then(this._getResponseData);
   }
 
   getUserInfo() {
     return fetch(`${this._baseUrl}/users/me`, {
       headers: {
-        authorization: this._token,
-      },
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },//заголовки запроса
     }).then(this._getResponseData);
   }
 
   setUserInfo(InputValue) {
     return fetch(`${this._baseUrl}/users/me`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },      
       body: JSON.stringify({
         name: InputValue.name,
         about: InputValue.about,
@@ -43,7 +40,10 @@ export default class Api {
   addCard(InputValue) {
     return fetch(`${this._baseUrl}/cards`, {
       method: "POST",
-      headers: this._headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         name: InputValue.name,
         link: InputValue.link,
@@ -55,8 +55,9 @@ export default class Api {
     return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: isLiked ? "DELETE" : "PUT",
       headers: {
-        authorization: this._token,
-      },
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },//заголовки запроса
     }).then(this._getResponseData);
   }
 
@@ -64,15 +65,19 @@ export default class Api {
     return fetch(`${this._baseUrl}/cards/${cardId}`, {
       method: "DELETE",
       headers: {
-        authorization: this._token,
-      },
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },//заголовки запроса
     }).then(this._getResponseData);
   }
 
   setAvatar(link) {
     return fetch(`${this._baseUrl}/users/me/avatar`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         avatar: link.avatar,
       }),
@@ -81,9 +86,5 @@ export default class Api {
 }
 
 export const api = new Api({
-  baseUrl: "https://mesto.nomoreparties.co/v1/cohort-66",
-  headers: {
-    authorization: "2e9ea00f-a4b6-41b7-9927-84e2f267cb21",
-    "Content-Type": "application/json",
-  },
+  baseUrl: "http://shakh.eth.nomoredomainsicu.ru",
 });

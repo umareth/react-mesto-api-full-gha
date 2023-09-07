@@ -14,7 +14,7 @@ import Login from "./Login";
 import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
 import ProtectedComponent from "./ProtectedComponent";
-import auth from "../utils/Auth";
+import * as auth from '../utils/Auth';
 import InfoTooltip from "./InfoTooltip";
 import Error404 from "./Error404.jsx";
 
@@ -41,30 +41,35 @@ function App() {
         setCurrentUser(userInfo);
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [loggedIn]);
 
   useEffect(() => {
     api
       .getCards()
       .then((res) => {
         setCards(res);
-
-        setLoaderSpinner(false);
+        setLoaderSpinner(false)
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [loggedIn]);
 
   useEffect(() => {
     handleJwtCheck();
-    // console.log("проверл jwt");
-  }, []);
+  }, [loggedIn]);
 
   const handleCardLike = async (card) => {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+
+    const isLiked = card.likes.some((i) => {
+      console.log(i)
+      const comparisonResult = i === currentUser._id;
+      console.log(`Сравнение ${i} === ${currentUser._id}: ${comparisonResult}`);
+      return comparisonResult;
+    });
     try {
       const newCard = await api.toggleLike(card._id, isLiked);
       setCards(cards.map((item) => (item._id === card._id ? newCard : item)));
     } catch (error) {
+      console.log(error)
       console.log(`Ошибка при клике на лайк: ${error}`);
     }
   };
@@ -79,17 +84,22 @@ function App() {
     }
   }
 
-  function handleUpdateUser(InputValue) {
-    api
-      .setUserInfo(InputValue)
-      .then((res) => {
-        setCurrentUser(res);
-        closeAllPopups();
-      })
-      .catch((error) => {
-        console.log(`Ошибка при изменении данных профиля: ${error}`);
-      });
+  async function handleUpdateUser(InputValue) {
+    setLoaderSpinner(true);
+    try {
+      // Отправляем запрос на сервер для обновления данных профиля и ждем ответа
+      const res = await api.setUserInfo(InputValue);
+  
+      setCurrentUser(res.user); // Обновление данных профиля в стейте
+      closeAllPopups(); // Закрытие попапа
+    } catch (error) {
+      // Обработка ошибок при запросе на сервер
+      console.log(`Ошибка при изменении данных профиля: ${error}`);
+    } finally {
+      setLoaderSpinner(false);
+    }
   }
+  
 
   async function handleAddPlaceSubmit(data) {
     try {
@@ -97,15 +107,18 @@ function App() {
       setCards([newCard, ...cards]);
       closeAllPopups();
     } catch (error) {
+      console.log(error)
       console.log(`Ошибка при добавлении карточки: ${error}`);
     }
   }
 
   function handleUpdateAvatar(data) {
+    console.log(data)
     api
       .setAvatar(data)
       .then((res) => {
-        setCurrentUser(res);
+        console.log(res.user)
+        setCurrentUser(res.user);
         closeAllPopups();
       })
       .catch((error) => {
@@ -115,11 +128,14 @@ function App() {
 
   async function handleLoginSubmit(data) {
     try {
+      console.log(data)
       const res = await auth.login(data);
       localStorage.setItem("jwt", res.token);
       setLoggedIn(true);
       setEmail(data.email);
       navigate("/", { replace: true });
+      console.log(res.token)
+      console.log('сработал логин')
     } catch (error) {
       setIsResultPopupOpen(true);
       setIsSuccess(false);
@@ -128,7 +144,6 @@ function App() {
   }
 
   function handleRegistSubmit(InputValue) {
-    console.log(InputValue);
     auth
       .register(InputValue)
       .then(() => {
@@ -144,14 +159,17 @@ function App() {
   }
 
   async function handleJwtCheck() {
+
     const jwt = localStorage.getItem("jwt");
     if (jwt) {
       try {
         const res = await auth.checkToken(jwt);
         setLoggedIn(true);
-        setEmail(res.data.email);
+        setEmail(res.email);
         navigate("/");
       } catch (error) {
+        console.log(error);
+
         console.error("Ошибка при проверке токена:", error);
         // В случае ошибки, сбросить авторизацию пользователя
         setLoggedIn(false);

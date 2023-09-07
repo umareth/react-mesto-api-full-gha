@@ -1,13 +1,12 @@
+require('dotenv').config();
 const express = require('express');
-
 const mongoose = require('mongoose'); // Подключаем mongoose
 
 const bodyParser = require('body-parser');
 const { errors, Joi, celebrate } = require('celebrate');
+const cors = require('./middlewares/cors');
 
 const NotFoundErr = require('./middlewares/err/notFound.js');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
-
 
 // Слушаем 3000 порт
 const { PORT = 3000 } = process.env;
@@ -16,8 +15,13 @@ const { login, createUser } = require('./controllers/user');
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors);
 
-app.use(requestLogger);
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -43,8 +47,6 @@ app.use('/cards', require('./routes/cards'));
 app.use('*', (req, res, next) => {
   next(new NotFoundErr('Запращеваемая страница не найдена'));
 });
-
-app.use(errorLogger);
 
 app.use(errors());
 

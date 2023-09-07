@@ -6,6 +6,8 @@ const NotFoundErr = require('../middlewares/err/notFound.js');
 const BadRequestErr = require('../middlewares/err/badReq');
 const ConflictErr = require('../middlewares/err/confErr');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 exports.getUsers = (req, res, next) => {
   User.find()
     .then((users) => {
@@ -32,7 +34,7 @@ exports.getUserById = (req, res, next) => {
     .orFail(() => {
       throw new NotFoundErr('Пользователь по указанному _id не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ user }))
     .catch((error) => {
       if (error.name === 'CastError') {
         next(new BadRequestErr('Передан невалидный id пользователя'));
@@ -84,7 +86,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'some-secret-key',
+        NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key',
         { expiresIn: '7d' },
       );
 
@@ -115,7 +117,7 @@ module.exports.updateUserInfo = (req, res, next) => {
     .orFail(() => {
       throw new NotFoundErr('Запрашиваемый пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ user }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
         next(new BadRequestErr('Переданы невалидные данные для обновления данных юзера'));
@@ -141,7 +143,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .orFail(() => {
       throw new NotFoundErr('Запрашиваемый пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ user }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
         next(new BadRequestErr('Отправлены невалидные данные для обновления аватара'));
