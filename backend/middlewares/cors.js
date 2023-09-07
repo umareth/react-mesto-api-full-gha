@@ -2,8 +2,8 @@ const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
 
 // Список разрешенных источников
 const allowedCors = [
-  'http://shakh.eth.nomoredomainsicu.ru/',
-  'https://shakh.eth.nomoredomainsicu.ru/',
+  'http://shakh.eth.nomoredomainsicu.ru',
+  'https://shakh.eth.nomoredomainsicu.ru',
   'http://localhost:3000',
   'https://localhost:3000',
 ];
