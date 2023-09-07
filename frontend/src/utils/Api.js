@@ -86,5 +86,5 @@ export default class Api {
 }
 
 export const api = new Api({
-  baseUrl: "http://api.shakh.eth.nomoredomainsicu.ru",
+  baseUrl: "https://api.shakh.eth.nomoredomainsicu.ru",
 });
