@@ -5,6 +5,7 @@ const mongoose = require('mongoose'); // Подключаем mongoose
 const bodyParser = require('body-parser');
 const { errors, Joi, celebrate } = require('celebrate');
 const cors = require('./middlewares/cors');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const NotFoundErr = require('./middlewares/err/notFound.js');
 
@@ -16,6 +17,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors);
+
+app.use(requestLogger);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -47,6 +50,8 @@ app.use('/cards', require('./routes/cards'));
 app.use('*', (req, res, next) => {
   next(new NotFoundErr('Запращеваемая страница не найдена'));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
