@@ -9,7 +9,7 @@
 
 ## Ссылки на мой проект
 
-IP-адрес 158.160.119.182
+IP 158.160.119.182
 
 Frontend http://shakh.eth.nomoredomainsicu.ru
 
