@@ -4,7 +4,7 @@ export default class Api {
   }
 
   _getResponseData = res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`);
-  
+
   getCards() {
     return fetch(`${this._baseUrl}/cards`, {
       headers: {
@@ -29,7 +29,7 @@ export default class Api {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('jwt')}`,
         'Content-Type': 'application/json'
-      },      
+      },
       body: JSON.stringify({
         name: InputValue.name,
         about: InputValue.about,
@@ -86,5 +86,5 @@ export default class Api {
 }
 
 export const api = new Api({
-  baseUrl: "http://shakh.eth.nomoredomainsicu.ru",
+  baseUrl: "http://api.shakh.eth.nomoredomainsicu.ru/",
 });
